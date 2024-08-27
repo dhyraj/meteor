@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Meteor App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
         home: MyHomePage(),
       ),
@@ -39,7 +39,7 @@ class MyHomePage extends StatelessWidget {
       body: Column(
         children: [
           Text('An AWESOME idea:'),
-          BigCard(pair.asLowerCase),
+          BigCard(pair: pair),
           ElevatedButton(
             onPressed: () {
               print('button pressed!');
@@ -53,7 +53,7 @@ class MyHomePage extends StatelessWidget {
 }
 
 class BigCard extends StatelessWidget {
-  const BigCard(String asLowerCase, {
+  const BigCard({
     super.key,
     required this.pair,
   });
@@ -62,6 +62,14 @@ class BigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(pair.asLowerCase);
+    var theme = Theme.of(context);
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(8.9),
+        child: Text(pair.asLowerCase),
+      ),
+    );
   }
 }
