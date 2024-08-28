@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Meteor App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         ),
         home: MyHomePage(),
       ),
@@ -27,26 +27,132 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+
+  void getNext() {
+    current = WordPair.random();
+    notifyListeners();
+  }
+
+  var myFavourites = <WordPair>[];
+  void toggleFavourite() {
+    if(myFavourites.contains(current)) {
+      myFavourites.remove(current);
+    } else {
+      myFavourites.add(current);
+    }
+    notifyListeners();
+  }
+
+  bool isFavourite() {
+    return myFavourites.contains(current);
+  }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState()  => _MyHomePage();
+}
+
+class _MyHomePage extends State<MyHomePage> {
+
+  var selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+
+    Widget window;
+    switch(selectedIndex) {
+      case 0:
+        window = GeneratorPage();
+        break;
+      case 1:
+        window = Placeholder();
+        break;
+      case 2:
+        window = Placeholder();
+        break;
+      default:
+        throw UnimplementedError("no widget for $selectedIndex");
+
+    }
+
+    return Scaffold(
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              extended: false,
+                destinations: [
+                  NavigationRailDestination(
+                      icon: Icon(IconData(0xe5e0, fontFamily: 'MaterialIcons')),
+                      label: Text('network speed')),
+                  NavigationRailDestination(
+                      icon: Icon(IconData(0xf8b3, fontFamily: 'MaterialIcons')),
+                      label: Text('CPU')),
+                  NavigationRailDestination(
+                      icon: Icon(IconData( 0xf6a5, fontFamily: 'MaterialIcons')),
+                      label: Text('temperature'))
+                ],
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                }),
+          ),
+          Expanded(
+              child: Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: window,
+          ))
+        ],
+      ),
+    );
+  }
+
+}
+
+class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
+    IconData icon;
+    if (appState.isFavourite()) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border_outlined;
+    }
+
     return Scaffold(
-      body: Column(
-        children: [
-          Text('An AWESOME idea:'),
-          BigCard(pair: pair),
-          ElevatedButton(
-            onPressed: () {
-              print('button pressed!');
-            },
-            child: Text('Next'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            BigCard(pair: pair),
+            SizedBox(height: 20),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavourite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -63,13 +169,20 @@ class BigCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary
+    );
 
     return Card(
       color: theme.colorScheme.primary,
       child: Padding(
-        padding: const EdgeInsets.all(8.9),
-        child: Text(pair.asLowerCase),
+        padding: const EdgeInsets.all(20),
+        child: Text(
+            pair.asCamelCase,
+            style: style,
+            semanticsLabel: pair.asPascalCase,),
       ),
     );
   }
 }
+
