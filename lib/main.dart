@@ -63,7 +63,7 @@ class _MyHomePage extends State<MyHomePage> {
     Widget window;
     switch(selectedIndex) {
       case 0:
-        window = GeneratorPage();
+        window = NetworkWindow();
         break;
       case 1:
         window = Placeholder();
@@ -112,7 +112,7 @@ class _MyHomePage extends State<MyHomePage> {
 
 }
 
-class GeneratorPage extends StatelessWidget {
+class NetworkWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -125,34 +125,32 @@ class GeneratorPage extends StatelessWidget {
       icon = Icons.favorite_border_outlined;
     }
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            BigCard(pair: pair),
-            SizedBox(height: 20),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    appState.toggleFavourite();
-                  },
-                  icon: Icon(icon),
-                  label: Text('Like'),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  },
-                  child: Text('Next'),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          BigCard(pair: pair),
+          SizedBox(height: 10),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.toggleFavourite();
+                },
+                icon: Icon(icon),
+                label: Text('Like'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  appState.getNext();
+                },
+                child: Text('Next'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
